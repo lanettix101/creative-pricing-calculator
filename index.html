@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora Creativa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Nunito Sans"', 'sans-serif'],
+            },
+            colors: {
+              brand: {
+                primary: '#D81B60', // Deep Pink/Red for buttons
+                text: '#2D3436', // Dark text
+                bgCenter: '#FFF5F8', // Gradient start
+                bgEdge: '#F9A8D4', // Gradient end
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Nunito Sans', sans-serif;
+        color: #2D3436;
+      }
+      /* Custom utility for the specific radial gradient */
+      .bg-creative-gradient {
+        background: radial-gradient(circle at center, #FFF5F8 0%, #F9A8D4 100%);
+      }
+    </style>
+</head>
+  <body class="bg-creative-gradient min-h-screen">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
