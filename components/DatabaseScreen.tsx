@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { DatabaseSettings, FlowerType, FLOWER_TYPES_LABEL } from '../types';
-import { Save, Layers, Package } from 'lucide-react';
+import { DatabaseSettings, FLOWER_TYPES, FlowerType, FLOWER_TYPES_LABEL } from '../types';
+import { AlertTriangle, Save, Layers, Package } from 'lucide-react';
 
 interface Props {
   initialSettings: DatabaseSettings;
@@ -70,6 +70,9 @@ const DatabaseScreen: React.FC<Props> = ({ initialSettings, onSave }) => {
 
   const [error, setError] = useState<string | null>(null);
 
+  const butterfliesWillBeIgnored =
+    parseFloat(globals.butterflyPackPrice) > 0 && parseInt(globals.butterfliesPerPack || '0') <= 0;
+
   const handleGlobalChange = (field: keyof typeof globals, value: string) => {
     setGlobals(prev => ({ ...prev, [field]: value }));
     setError(null);
@@ -104,11 +107,12 @@ const DatabaseScreen: React.FC<Props> = ({ initialSettings, onSave }) => {
     };
 
     // Parse Specifics
-    (Object.keys(flowers) as FlowerType[]).forEach(key => {
+    FLOWER_TYPES.forEach(key => {
+      const source = flowers[key] ?? {};
       parsedSettings.flowerSettings[key] = {
-        cmPerPetal: parseFloat(flowers[key].cmPerPetal) || 0,
-        petalsPerFlower: parseInt(flowers[key].petalsPerFlower) || 0,
-        siliconePerFlower: parseFloat(flowers[key].siliconePerFlower) || 0,
+        cmPerPetal: parseFloat(source.cmPerPetal) || 0,
+        petalsPerFlower: parseInt(source.petalsPerFlower) || 0,
+        siliconePerFlower: parseFloat(source.siliconePerFlower) || 0,
       };
     });
 
@@ -168,6 +172,17 @@ const DatabaseScreen: React.FC<Props> = ({ initialSettings, onSave }) => {
               <InputField label="Costo de Impresión ($)" value={globals.printingCost} onChange={(v) => handleGlobalChange('printingCost', v)} />
               <InputField label="Precio Paquete Mariposas ($)" value={globals.butterflyPackPrice} onChange={(v) => handleGlobalChange('butterflyPackPrice', v)} />
               <InputField label="Mariposas por Paquete (Entero)" value={globals.butterfliesPerPack} onChange={(v) => handleGlobalChange('butterfliesPerPack', v)} isInteger />
+
+              {butterfliesWillBeIgnored && (
+                <div className="bg-amber-50 text-amber-700 p-4 rounded-xl text-sm mb-4 border border-amber-200 flex items-start gap-2">
+                  <AlertTriangle size={18} className="shrink-0 mt-0.5" />
+                  <p>
+                    <span className="font-semibold">Mariposas por Paquete en 0.</span>{' '}
+                    El costo de las mariposas se calculará como $0 aunque definas un precio de
+                    paquete. Déjalo en 0 si nunca las usas.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

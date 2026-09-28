@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { DatabaseSettings, CalculationInput, ScreenState, DEFAULT_SETTINGS, DEFAULT_INPUTS } from './types';
+import React, { useState } from 'react';
+import { CalculationInput, DatabaseSettings, ScreenState, DEFAULT_SETTINGS, DEFAULT_INPUTS } from './types';
 import DatabaseScreen from './components/DatabaseScreen';
 import CalculatorScreen from './components/CalculatorScreen';
 import LoadingScreen from './components/LoadingScreen';
@@ -7,35 +7,12 @@ import ResultsScreen from './components/ResultsScreen';
 import { Flower, Settings } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [screen, setScreen] = useState<ScreenState>('LOADING_APP');
+  const [screen, setScreen] = useState<ScreenState>('DATABASE');
   const [settings, setSettings] = useState<DatabaseSettings>(DEFAULT_SETTINGS);
   const [inputs, setInputs] = useState<CalculationInput>(DEFAULT_INPUTS);
 
-  // Persistence Logic
-  useEffect(() => {
-    const loadData = () => {
-      try {
-        const storedData = localStorage.getItem('creative_calc_settings_v1_1');
-        if (storedData) {
-          const parsed = JSON.parse(storedData);
-          setSettings({ ...DEFAULT_SETTINGS, ...parsed }); // Merge to ensure new fields exist
-          setScreen('CALCULATOR');
-        } else {
-          // Check for old version to migrate? 
-          // For simplicity in this prompt, if v1.1 not found, go to DB.
-          setScreen('DATABASE');
-        }
-      } catch (e) {
-        console.error("Failed to load data", e);
-        setScreen('DATABASE');
-      }
-    };
-    loadData();
-  }, []);
-
   const handleSaveSettings = (newSettings: DatabaseSettings) => {
     setSettings(newSettings);
-    localStorage.setItem('creative_calc_settings_v1_1', JSON.stringify(newSettings));
     setScreen('CALCULATOR');
   };
 
@@ -56,8 +33,6 @@ const App: React.FC = () => {
   const goToSettings = () => {
     setScreen('DATABASE');
   };
-
-  if (screen === 'LOADING_APP') return null;
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-brand-text">

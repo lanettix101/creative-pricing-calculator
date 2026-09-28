@@ -56,13 +56,15 @@ export interface CalculationInput {
   additionalCosts: number;
 }
 
-export type ScreenState = 'LOADING_APP' | 'DATABASE' | 'CALCULATOR' | 'CALCULATING' | 'RESULTS';
+export type ScreenState = 'DATABASE' | 'CALCULATOR' | 'CALCULATING' | 'RESULTS';
 
-const DEFAULT_FLOWER_SETTINGS: FlowerSettings = {
+export const DEFAULT_FLOWER_SETTINGS: FlowerSettings = {
   cmPerPetal: 0,
   petalsPerFlower: 0,
   siliconePerFlower: 0,
 };
+
+export const FLOWER_TYPES = Object.keys(FLOWER_TYPES_LABEL) as FlowerType[];
 
 export const DEFAULT_SETTINGS: DatabaseSettings = {
   tapePrice: 0,
@@ -74,14 +76,9 @@ export const DEFAULT_SETTINGS: DatabaseSettings = {
   printingCost: 0,
   butterflyPackPrice: 0,
   butterfliesPerPack: 0,
-  flowerSettings: {
-    'TULIP': { ...DEFAULT_FLOWER_SETTINGS },
-    'DAHLIA': { ...DEFAULT_FLOWER_SETTINGS },
-    'ROSE': { ...DEFAULT_FLOWER_SETTINGS },
-    'SUNFLOWER': { ...DEFAULT_FLOWER_SETTINGS },
-    'DAISY': { ...DEFAULT_FLOWER_SETTINGS },
-    'LEAF': { ...DEFAULT_FLOWER_SETTINGS },
-  }
+  flowerSettings: Object.fromEntries(
+    FLOWER_TYPES.map((type) => [type, { ...DEFAULT_FLOWER_SETTINGS }])
+  ) as Record<FlowerType, FlowerSettings>,
 };
 
 export const DEFAULT_INPUTS: CalculationInput = {

@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react';
-import { CalculationInput, DatabaseSettings, FLOWER_TYPES_LABEL, FlowerType } from '../types';
+import { CalculationInput, DatabaseSettings, DEFAULT_FLOWER_SETTINGS, FLOWER_TYPES_LABEL, FlowerType } from '../types';
 import { RotateCcw, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
@@ -9,15 +9,17 @@ interface Props {
   onReset: () => void;
 }
 
+const safeDiv = (a: number, b: number) => (Number.isFinite(b) && b > 0 ? a / b : 0);
+
 const ResultsScreen: React.FC<Props> = ({ settings, inputs, onReset }) => {
   const shareRef = useRef<HTMLDivElement>(null);
 
   const results = useMemo(() => {
     // 1. Globals
-    const costStick = settings.sticksPackPrice / 100;
-    const costPearl = settings.pearlsPackPrice / 100;
-    const costPerMeter = settings.tapePrice / settings.tapeLength;
-    const costButterfly = settings.butterflyPackPrice / settings.butterfliesPerPack;
+    const costStick = safeDiv(settings.sticksPackPrice, 100);
+    const costPearl = safeDiv(settings.pearlsPackPrice, 100);
+    const costPerMeter = safeDiv(settings.tapePrice, settings.tapeLength);
+    const costButterfly = safeDiv(settings.butterflyPackPrice, settings.butterfliesPerPack);
 
     // 2. Iterative Calculation for Flowers
     let totalFlowersCost = 0;
@@ -30,8 +32,8 @@ const ResultsScreen: React.FC<Props> = ({ settings, inputs, onReset }) => {
       const qty = inputs.quantities[type];
       if (qty > 0) {
         totalFlowerCount += qty;
-        const config = settings.flowerSettings[type];
-        
+        const config = settings.flowerSettings?.[type] ?? DEFAULT_FLOWER_SETTINGS;
+
         // Cost per this specific flower type
         const metersPerPetal = config.cmPerPetal / 100;
         const costPetal = costPerMeter * metersPerPetal;
@@ -76,7 +78,8 @@ const ResultsScreen: React.FC<Props> = ({ settings, inputs, onReset }) => {
   }, [settings, inputs]);
 
   const formatMoney = (amount: number) => {
-    return amount.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+    const safe = Number.isFinite(amount) ? amount : 0;
+    return safe.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
   };
 
   // Generate list for the ticket
